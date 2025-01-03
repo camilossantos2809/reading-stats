@@ -1,4 +1,4 @@
-package io.readingstats.android
+package io.readingstats.android.view.login
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -10,6 +10,9 @@ import androidx.navigation.NavHostController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import io.readingstats.android.BuildConfig
+import io.readingstats.android.Screens
+import io.readingstats.android.TAG
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

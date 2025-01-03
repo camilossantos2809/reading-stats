@@ -21,6 +21,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.readingstats.android.view.home.HomeView
+import io.readingstats.android.view.home.HomeViewModel
+import io.readingstats.android.view.login.LoginView
 
 enum class Screens {
     Login, Home
@@ -56,68 +59,7 @@ fun MainRoutes(navController: NavHostController = rememberNavController()) {
             LoginView(navController)
         }
         composable(route = Screens.Home.name) {
-            HomeView(navController)
+            HomeView()
         }
     }
 }
-
-@Composable
-fun LoginView(navController: NavHostController) {
-    val viewModel = viewModel { LoginViewModel(navController) }
-    val formState by viewModel.form.collectAsState()
-
-    Column {
-        TextField(value = formState.email,
-            onValueChange = { viewModel.onEmailChange(it) },
-            label = { Text("Email") })
-        TextField(value = formState.password,
-            onValueChange = { viewModel.onPasswordChange(it) },
-            label = { Text("Password") })
-        Button(onClick = { viewModel.signIn() }) {
-            Text(text = "Sign In")
-        }
-        Text(text = viewModel.status.toString())
-    }
-}
-
-@Composable
-fun HomeView(navController: NavHostController) {
-    val viewModel = viewModel { HomeViewModel() }
-    val goal by viewModel.goal.collectAsState()
-    val books by viewModel.books.collectAsState()
-
-    Column(
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Text(text = "Goal pages: ${goal.pages}", style = MaterialTheme.typography.titleLarge)
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(books) { book ->
-                Card(
-                    modifier = Modifier.fillMaxSize(),
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(text = book.title, style = MaterialTheme.typography.titleLarge)
-                        Text(text = book.author, style = MaterialTheme.typography.bodyMedium)
-                        Text(
-                            text = "${book.pages} pages", style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-}
-
-//@Preview
-//@Composable
-//fun DefaultPreview() {
-//    MyApplicationTheme {
-//        MainRoutes("Hello, Android!")
-//    }
-//}

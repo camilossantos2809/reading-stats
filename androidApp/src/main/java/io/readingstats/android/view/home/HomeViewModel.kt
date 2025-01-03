@@ -1,4 +1,4 @@
-package io.readingstats.android
+package io.readingstats.android.view.home
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
