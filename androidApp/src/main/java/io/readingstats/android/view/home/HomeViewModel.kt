@@ -12,7 +12,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-data class Book(val title: String = "", val pages: Int = 0, val author: String = "")
+data class Book(
+    val id: String = "",
+    val title: String = "",
+    val pages: Int = 0,
+    val author: String = ""
+)
 
 data class Goal(val pages: Int = 0, val books: List<DocumentReference>? = null)
 
@@ -38,7 +43,8 @@ class HomeViewModel : ViewModel() {
                     _goal.value = result
                     val bookList = result.books?.mapNotNull { ref ->
                         try {
-                            ref.get().await().toObject<Book>()
+                            val book = ref.get().await().toObject<Book>()
+                            book?.copy(id = ref.id)
                         } catch (e: Exception) {
                             Log.w("readingStats", "Failed to fetch book: ${ref.id}", e)
                             null
