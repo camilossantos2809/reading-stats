@@ -19,7 +19,7 @@ android {
     compileSdk = 34
     defaultConfig {
         applicationId = "io.readingstats.android"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"

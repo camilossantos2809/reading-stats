@@ -4,22 +4,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
+import io.readingstats.android.domain.Book
+import io.readingstats.android.domain.Goal
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-
-data class Book(
-    val id: String = "",
-    val title: String = "",
-    val pages: Int = 0,
-    val author: String = ""
-)
-
-data class Goal(val pages: Int = 0, val books: List<DocumentReference>? = null)
 
 class HomeViewModel : ViewModel() {
     private val _goal = MutableStateFlow(Goal())

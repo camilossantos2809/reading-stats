@@ -27,7 +27,6 @@ enum class Status {
     Error
 }
 
-
 class LoginViewModel(private val navController: NavHostController) : ViewModel() {
     private val _form = MutableStateFlow(
         Form(
