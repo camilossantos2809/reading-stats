@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import io.readingstats.android.domain.Book
@@ -13,15 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.time.format.DateTimeFormatter
-import java.time.ZoneId
 
-fun Timestamp.formatToDate(): String {
-    val instant = this.toDate().toInstant()
-    val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    return formatter.format(localDate)
-}
 
 class BookViewModel(val bookId: String?) : ViewModel() {
     private val _book = MutableStateFlow(Book())
