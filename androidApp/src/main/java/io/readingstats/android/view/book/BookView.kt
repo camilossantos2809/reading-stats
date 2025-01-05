@@ -53,7 +53,7 @@ fun BookView(navController: NavController, bookId: String?) {
             Text(
                 text = "$bookId - ${book.pages} pages", style = MaterialTheme.typography.bodySmall
             )
-            IconButton(onClick = { navController.navigate(Screens.ReadingProgress.route) }) {
+            IconButton(onClick = { navController.navigate("readingProgress/${bookId}") }) {
                 Icon(Icons.Default.AddCircle, contentDescription = "New progress")
             }
             Spacer(modifier = Modifier.padding(8.dp))

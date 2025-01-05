@@ -31,7 +31,8 @@ import io.readingstats.android.components.textfield.DateTransformation
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReadingProgressView(
-    navController: NavController
+    navController: NavController,
+    bookId:String?
 ) {
     val viewModel = viewModel { ReadingProgressViewModel() }
     val formData by viewModel.formData.collectAsState()
@@ -75,7 +76,7 @@ fun ReadingProgressView(
             }
             Button(
                 onClick = {
-                    viewModel.saveProgress()
+                    viewModel.saveProgress(bookId)
                 }, modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Save")

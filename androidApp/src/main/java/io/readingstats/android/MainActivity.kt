@@ -23,7 +23,7 @@ enum class Screens(val route: String) {
     Login("login"),
     Home("home"),
     Book("book/{bookId}"),
-    ReadingProgress("readingProgress")
+    ReadingProgress("readingProgress/{bookId}"),
 }
 
 const val TAG = "readingStats"
@@ -64,8 +64,11 @@ fun MainRoutes(navController: NavHostController = rememberNavController()) {
         ) { backStackEntry ->
             BookView(navController, backStackEntry.arguments?.getString("bookId"))
         }
-        composable(route = Screens.ReadingProgress.route) {
-            ReadingProgressView(navController)
+        composable(
+            route = Screens.ReadingProgress.route,
+            arguments = listOf(navArgument("bookId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            ReadingProgressView(navController, backStackEntry.arguments?.getString("bookId"))
         }
     }
 }

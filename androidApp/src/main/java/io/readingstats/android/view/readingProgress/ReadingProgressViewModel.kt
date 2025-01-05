@@ -1,10 +1,16 @@
 package io.readingstats.android.view.readingProgress
 
 import androidx.lifecycle.ViewModel
-import io.readingstats.android.domain.ReadingProgress
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.firestore
 import io.readingstats.android.domain.toTimestamp
+import io.readingstats.android.view.SharedState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -21,19 +27,42 @@ data class FormData(
 class ReadingProgressViewModel : ViewModel() {
     private val _formData = MutableStateFlow(FormData())
     val formData get() = _formData.asStateFlow()
+    private val readingProgress = SharedState.readingProgress
 
-    fun saveProgress() {
-        _formData.value = _formData.value.copy(errorMessage = null)
+    fun saveProgress(bookId: String?) {
+        clearErrorMessage()
         val lastPageInt = _formData.value.lastPage.toIntOrNull()
         if (_formData.value.lastPage.isEmpty() || lastPageInt == null) {
-            _formData.value =
-                _formData.value.copy(errorMessage = "Last page should be a number and not empty")
+            updateErrorMessage("Last page should be a number and not empty")
             return
         }
-        val progress = ReadingProgress(
-            date = _formData.value.date.toTimestamp(),
-            lastPage = _formData.value.lastPage.toInt()
+        if (bookId.isNullOrEmpty()) {
+            updateErrorMessage("Book id is required to save progress")
+            return
+        }
+        val previousLastPage = if (readingProgress.value.isEmpty()) {
+            0
+        } else {
+            readingProgress.value.first().lastPage
+        }
+        val progressMap = mapOf(
+            "initialPage" to previousLastPage,
+            "date" to _formData.value.date.toTimestamp(),
+            "lastPage" to lastPageInt,
+            "pagesRead" to lastPageInt - previousLastPage
         )
+        viewModelScope.launch {
+            try {
+                val db = Firebase.firestore
+                val readingProgressRef = db.collection("readingProgress").add(progressMap).await()
+                val bookRef = db.collection("books").document(bookId)
+                bookRef.update("readingProgress", FieldValue.arrayUnion(readingProgressRef)).await()
+                _formData.value = FormData()
+//                SharedState.readingProgress.value
+            } catch (e: Exception) {
+                updateErrorMessage(e.message)
+            }
+        }
     }
 
     fun updateDate(date: String) {
@@ -45,4 +74,13 @@ class ReadingProgressViewModel : ViewModel() {
     fun updateLastPage(lastPage: String) {
         _formData.value = _formData.value.copy(lastPage = lastPage)
     }
+
+    private fun updateErrorMessage(message: String?) {
+        _formData.value = _formData.value.copy(errorMessage = message)
+    }
+
+    private fun clearErrorMessage() {
+        _formData.value = _formData.value.copy(errorMessage = null)
+    }
+
 }

@@ -8,18 +8,14 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import io.readingstats.android.domain.Book
 import io.readingstats.android.domain.ReadingProgress
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import io.readingstats.android.view.SharedState
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 
 class BookViewModel(val bookId: String?) : ViewModel() {
-    private val _book = MutableStateFlow(Book())
-    val book get() = _book.asStateFlow()
-
-    private val _readingProgress = MutableStateFlow(listOf<ReadingProgress>())
-    val readingProgress get() = _readingProgress.asStateFlow()
+    val book = SharedState.book
+    val readingProgress = SharedState.readingProgress
 
     init {
         fetchBook()
@@ -33,7 +29,7 @@ class BookViewModel(val bookId: String?) : ViewModel() {
                 val bookSnapshot = bookRef.get().await()
                 val result = bookSnapshot.toObject<Book>()
                 if (result != null) {
-                    _book.value = result.copy(id = bookRef.id)
+                    SharedState.updateBook(result.copy(id = bookRef.id))
 
                     val readingProgressList = result.readingProgress?.mapNotNull { ref ->
                         try {
@@ -44,7 +40,7 @@ class BookViewModel(val bookId: String?) : ViewModel() {
                             null
                         }
                     }.orEmpty()
-                    _readingProgress.value = readingProgressList.sortedByDescending { it.lastPage }
+                    SharedState.updateReadingProgress(readingProgressList.sortedByDescending { it.lastPage })
                 }
             } catch (e: Exception) {
                 Log.w("readingStats", "Error fetching book $bookId.", e)
