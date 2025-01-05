@@ -17,11 +17,13 @@ import androidx.navigation.navArgument
 import io.readingstats.android.view.book.BookView
 import io.readingstats.android.view.home.HomeView
 import io.readingstats.android.view.login.LoginView
+import io.readingstats.android.view.readingProgress.ReadingProgressView
 
 enum class Screens(val route: String) {
     Login("login"),
     Home("home"),
-    Book("book/{bookId}")
+    Book("book/{bookId}"),
+    ReadingProgress("readingProgress")
 }
 
 const val TAG = "readingStats"
@@ -61,6 +63,9 @@ fun MainRoutes(navController: NavHostController = rememberNavController()) {
             arguments = listOf(navArgument("bookId") { type = NavType.StringType })
         ) { backStackEntry ->
             BookView(navController, backStackEntry.arguments?.getString("bookId"))
+        }
+        composable(route = Screens.ReadingProgress.route) {
+            ReadingProgressView(navController)
         }
     }
 }
