@@ -1,19 +1,28 @@
 package io.readingstats.android.view.book
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,7 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -38,6 +49,7 @@ fun BookView(navController: NavController, bookId: String?) {
     val readingProgress by viewModel.readingProgress.collectAsState()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isScreenFocused = currentBackStackEntry?.destination?.route == Screens.Book.route
+    val loading = viewModel.loading.collectAsState()
 
     LaunchedEffect(isScreenFocused) {
         if (isScreenFocused) {
@@ -66,19 +78,56 @@ fun BookView(navController: NavController, bookId: String?) {
             IconButton(onClick = { navController.navigate("readingProgress/${bookId}") }) {
                 Icon(Icons.Default.AddCircle, contentDescription = "New progress")
             }
-            Spacer(modifier = Modifier.padding(8.dp))
-            LazyColumn {
+            Spacer(modifier = Modifier.padding(4.dp))
+            if (loading.value) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                }
+            }
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(readingProgress) { progress ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextContent(
-                            text = progress.date.formatToDate(),
-                        )
-                        TextContent(
-                            text = "${progress.pagesRead} pages read",
-                        )
-                        TextContent(
-                            text = "Last page: ${progress.lastPage}",
-                        )
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                TextContent(
+                                    text = progress.date.formatToDate(),
+                                )
+                                TextContent(
+                                    text = "${progress.pagesRead} pages read",
+                                )
+                                TextContent(
+                                    text = "Last page: ${progress.lastPage}",
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    viewModel.deleteProgress(progress.id)
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete",
+                                    tint = Color.Red
+                                )
+                            }
+                        }
                     }
                 }
             }
