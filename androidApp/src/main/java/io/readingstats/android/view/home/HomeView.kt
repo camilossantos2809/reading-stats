@@ -2,6 +2,7 @@ package io.readingstats.android.view.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,6 +33,7 @@ fun HomeView(navController: NavController) {
         Text(text = "Goal pages: ${goal.pages}", style = MaterialTheme.typography.titleLarge)
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(top = 8.dp)
         ) {
             items(books) { book ->
                 Card(
@@ -46,9 +48,15 @@ fun HomeView(navController: NavController) {
                     ) {
                         Text(text = book.title, style = MaterialTheme.typography.titleLarge)
                         Text(text = book.author, style = MaterialTheme.typography.bodyMedium)
-                        Text(
-                            text = "${book.pages} pages", style = MaterialTheme.typography.bodySmall
-                        )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = "${book.pages} pages", style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                text = "Status: ${book.status}", style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
                     }
                 }
             }
