@@ -19,12 +19,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import io.readingstats.android.Screens
 import io.readingstats.android.domain.formatToDate
 
@@ -34,6 +36,14 @@ fun BookView(navController: NavController, bookId: String?) {
     val viewModel = viewModel { BookViewModel(bookId = bookId) }
     val book by viewModel.book.collectAsState()
     val readingProgress by viewModel.readingProgress.collectAsState()
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val isScreenFocused = currentBackStackEntry?.destination?.route == Screens.Book.route
+
+    LaunchedEffect(isScreenFocused) {
+        if (isScreenFocused) {
+            viewModel.fetchBook()
+        }
+    }
 
     Scaffold(topBar = {
         TopAppBar(title = { Text("Book details") }, navigationIcon = {

@@ -17,11 +17,7 @@ class BookViewModel(val bookId: String?) : ViewModel() {
     val book = SharedState.book
     val readingProgress = SharedState.readingProgress
 
-    init {
-        fetchBook()
-    }
-
-    private fun fetchBook() {
+    fun fetchBook() {
         viewModelScope.launch {
             try {
                 val db = Firebase.firestore

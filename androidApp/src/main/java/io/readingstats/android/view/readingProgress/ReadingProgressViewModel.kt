@@ -2,6 +2,7 @@ package io.readingstats.android.view.readingProgress
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
@@ -29,7 +30,7 @@ class ReadingProgressViewModel : ViewModel() {
     val formData get() = _formData.asStateFlow()
     private val readingProgress = SharedState.readingProgress
 
-    fun saveProgress(bookId: String?) {
+    fun saveProgress(bookId: String?,navController: NavController) {
         clearErrorMessage()
         val lastPageInt = _formData.value.lastPage.toIntOrNull()
         if (_formData.value.lastPage.isEmpty() || lastPageInt == null) {
@@ -58,7 +59,7 @@ class ReadingProgressViewModel : ViewModel() {
                 val bookRef = db.collection("books").document(bookId)
                 bookRef.update("readingProgress", FieldValue.arrayUnion(readingProgressRef)).await()
                 _formData.value = FormData()
-//                SharedState.readingProgress.value
+                navController.popBackStack()
             } catch (e: Exception) {
                 updateErrorMessage(e.message)
             }
