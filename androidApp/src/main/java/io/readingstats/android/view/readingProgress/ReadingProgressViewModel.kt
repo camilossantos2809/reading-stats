@@ -46,17 +46,22 @@ class ReadingProgressViewModel : ViewModel() {
         } else {
             readingProgress.value.first().lastPage
         }
-        val progressMap = mapOf(
-            "initialPage" to previousLastPage,
-            "date" to _formData.value.date.toTimestamp(),
-            "lastPage" to lastPageInt,
-            "pagesRead" to lastPageInt - previousLastPage
-        )
+
         viewModelScope.launch {
             try {
                 val db = Firebase.firestore
-                val readingProgressRef = db.collection("readingProgress").add(progressMap).await()
+                // TODO: Criar componente para alterar "goal"
+                val goalRef = db.collection("goals").document("2025")
                 val bookRef = db.collection("books").document(bookId)
+                val progressMap = mapOf(
+                    "goal" to goalRef,
+                    "book" to bookRef,
+                    "initialPage" to previousLastPage,
+                    "date" to _formData.value.date.toTimestamp(),
+                    "lastPage" to lastPageInt,
+                    "pagesRead" to lastPageInt - previousLastPage,
+                )
+                val readingProgressRef = db.collection("readingProgress").add(progressMap).await()
                 bookRef.update("readingProgress", FieldValue.arrayUnion(readingProgressRef)).await()
                 _formData.value = FormData()
                 navController.popBackStack()
