@@ -65,3 +65,8 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.ui.text.google.fonts)
 }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
