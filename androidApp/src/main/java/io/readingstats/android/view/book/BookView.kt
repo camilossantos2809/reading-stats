@@ -75,10 +75,15 @@ fun BookView(navController: NavController, bookId: String?) {
             Text(
                 text = "$bookId - ${book.pages} pages", style = MaterialTheme.typography.bodySmall
             )
-            IconButton(onClick = { navController.navigate("readingProgress/${bookId}") }) {
-                Icon(Icons.Default.AddCircle, contentDescription = "New progress")
+            Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
+                IconButton(onClick = { navController.navigate("readingProgress/${bookId}") }) {
+                    Icon(
+                        Icons.Default.AddCircle,
+                        contentDescription = "New progress",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
-            Spacer(modifier = Modifier.padding(4.dp))
             if (loading.value) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
