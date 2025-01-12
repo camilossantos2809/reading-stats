@@ -36,8 +36,6 @@ fun ReadingProgressView(
     val viewModel = viewModel { ReadingProgressViewModel() }
     val formData by viewModel.formData.collectAsState()
 
-
-
     Scaffold(topBar = {
         TopAppBar(title = { Text("Reading Progress") }, navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
