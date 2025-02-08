@@ -16,7 +16,7 @@ plugins {
 
 android {
     namespace = "io.readingstats.android"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "io.readingstats.android"
         minSdk = 26
@@ -39,7 +39,21 @@ android {
         }
         getByName("debug") {
             buildConfigField("String", "DEV_EMAIL", "\"${localProperties["DEV_EMAIL"] ?: ""}\"")
-            buildConfigField("String", "DEV_PASSWORD", "\"${localProperties["DEV_PASSWORD"] ?: ""}\"")
+            buildConfigField(
+                "String",
+                "DEV_PASSWORD",
+                "\"${localProperties["DEV_PASSWORD"] ?: ""}\""
+            )
+            buildConfigField(
+                "String",
+                "TURSO_DATABASE_URL",
+                "\"${localProperties["TURSO_DATABASE_URL"] ?: ""}\""
+            )
+            buildConfigField(
+                "String",
+                "TURSO_AUTH_TOKEN",
+                "\"${localProperties["TURSO_AUTH_TOKEN"] ?: ""}\""
+            )
         }
     }
     compileOptions {
@@ -64,6 +78,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.navigation.compose)
     implementation(libs.ui.text.google.fonts)
+    implementation(libs.libsql)
 }
 java {
     toolchain {
