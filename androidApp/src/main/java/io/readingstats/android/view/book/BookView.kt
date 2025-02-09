@@ -110,7 +110,7 @@ fun BookView(navController: NavController, bookId: String?) {
                                 verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 TextContent(
-                                    text = progress.date.formatToDate(),
+                                    text = progress.dateRead,
                                 )
                                 TextContent(
                                     text = "${progress.pagesRead} pages read",
@@ -121,7 +121,7 @@ fun BookView(navController: NavController, bookId: String?) {
                             }
                             IconButton(
                                 onClick = {
-                                    viewModel.deleteProgress(progress.id)
+                                    viewModel.deleteProgress(progress.dateRead)
                                 }
                             ) {
                                 Icon(

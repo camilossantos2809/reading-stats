@@ -38,6 +38,7 @@ fun HomeView(navController: NavController) {
                     modifier = Modifier.fillMaxSize(),
                     shape = RoundedCornerShape(8.dp),
                     onClick = {
+                        viewModel.selectBook(book)
                         navController.navigate("book/${book.id}")
                     }
                 ) {
@@ -46,12 +47,14 @@ fun HomeView(navController: NavController) {
                     ) {
                         Text(text = book.title, style = MaterialTheme.typography.titleLarge)
                         Text(text = book.author, style = MaterialTheme.typography.bodyMedium)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text(
-                                text = "${book.pages} pages", style = MaterialTheme.typography.bodySmall
+                                text = "${book.pages} pages",
+                                style = MaterialTheme.typography.bodySmall
                             )
                             Text(
-                                text = "Status: ${book.status}", style = MaterialTheme.typography.bodySmall
+                                text = "Status: ${book.status}",
+                                style = MaterialTheme.typography.bodySmall
                             )
                         }
 

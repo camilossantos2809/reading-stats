@@ -3,15 +3,14 @@ package io.readingstats.android.view.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.toObject
 import io.readingstats.android.domain.Book
 import io.readingstats.android.domain.Goal
+import io.readingstats.android.services.db.connect
+import io.readingstats.android.view.SharedState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+
 
 class HomeViewModel : ViewModel() {
     private val _goal = MutableStateFlow(Goal())
@@ -27,27 +26,27 @@ class HomeViewModel : ViewModel() {
     private fun fetchGoalAndBooks() {
         viewModelScope.launch {
             try {
-                val db = Firebase.firestore
-                val goalRef = db.collection("goals").document("2025")
-                val goalSnapshot = goalRef.get().await()
-                val result = goalSnapshot.toObject<Goal>()
-                if (result != null) {
-                    _goal.value = result
-                    val bookList = result.books?.mapNotNull { ref ->
-                        try {
-                            val book = ref.get().await().toObject<Book>()
-                            book?.copy(id = ref.id)
-                        } catch (e: Exception) {
-                            Log.w("readingStats", "Failed to fetch book: ${ref.id}", e)
-                            null
-                        }
-                    }.orEmpty()
-                    _books.value = bookList
+                connect().use {
+                    _books.value = it.query("select * from book").map { row ->
+                        val author = row[2]
+                        val pages = row[3] as Long
+                        Book(
+                            id = row[0] as String,
+                            title = row[1] as String,
+                            author = if (author == null) "" else author as String,
+                            pages = pages.toInt(),
+                            status = row[4] as String
+                        )
+                    }
                 }
             } catch (e: Exception) {
-                Log.w("readingStats", "Error fetching goal or books.", e)
+                Log.w("turso", "Error testing turso", e)
             }
         }
+    }
+
+    fun selectBook(book:Book){
+        SharedState.updateBook(book)
     }
 
 }
