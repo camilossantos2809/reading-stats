@@ -73,8 +73,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.runtime.ktx)
     debugImplementation(libs.compose.ui.tooling)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
     implementation(libs.navigation.compose)
     implementation(libs.ui.text.google.fonts)
     implementation(libs.libsql)

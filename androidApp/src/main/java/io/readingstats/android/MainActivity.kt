@@ -16,11 +16,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.readingstats.android.view.book.BookView
 import io.readingstats.android.view.home.HomeView
-import io.readingstats.android.view.login.LoginView
 import io.readingstats.android.view.readingProgress.ReadingProgressView
 
 enum class Screens(val route: String) {
-    Login("login"),
     Home("home"),
     Book("book/{bookId}"),
     ReadingProgress("readingProgress/{bookId}"),
@@ -50,11 +48,8 @@ class MainActivity : ComponentActivity() {
 fun MainRoutes(navController: NavHostController = rememberNavController()) {
     NavHost(
         navController = navController,
-        startDestination = Screens.Login.route,
+        startDestination = Screens.Home.route,
     ) {
-        composable(route = Screens.Login.route) {
-            LoginView(navController)
-        }
         composable(route = Screens.Home.route) {
             HomeView(navController)
         }
