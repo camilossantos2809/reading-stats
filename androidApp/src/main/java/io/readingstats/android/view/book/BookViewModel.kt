@@ -51,7 +51,7 @@ class BookViewModel(val bookId: String?) : ViewModel() {
         }
     }
 
-    fun deleteProgress(dateRead: String,) {
+    fun deleteProgress(dateRead: String) {
         _loading.value = true
         if (bookId.isNullOrEmpty()) {
             Log.w("readingStats", "Book id is required to save progress")
@@ -59,14 +59,15 @@ class BookViewModel(val bookId: String?) : ViewModel() {
         }
         viewModelScope.launch {
             try {
-//                val db = Firebase.firestore
-//                val bookRef = db.collection("books").document(bookId)
-//                val readingProgressRef =
-//                    db.collection("readingProgress").document(readingProgressId)
-//                bookRef.update("readingProgress", FieldValue.arrayRemove(readingProgressRef))
-//                    .await()
-//                readingProgressRef.delete().await()
-//                fetchBook()
+                connect().use {
+                    it.execute(
+                        """
+                        delete from book_reading_progress
+                        where book_id = $bookId and date_read = $dateRead;
+                        """
+                    )
+                }
+                fetchBook()
             } catch (e: Exception) {
                 Log.w("readingStats", "Error deleting reading progress $dateRead.", e)
             } finally {
