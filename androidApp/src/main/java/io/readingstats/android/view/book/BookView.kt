@@ -37,7 +37,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import io.readingstats.android.Screens
-import io.readingstats.android.domain.formatToDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
