@@ -3,7 +3,7 @@ package io.readingstats.android.view.book
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.readingstats.android.domain.ReadingProgress
+import io.readingstats.android.repository.Repository
 import io.readingstats.android.services.db.connect
 import io.readingstats.android.view.SharedState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,29 +21,8 @@ class BookViewModel(val bookId: String?) : ViewModel() {
         _loading.value = true
         viewModelScope.launch {
             try {
-                connect().use {
-                    val result = it.query(
-                        """
-                        select 
-                          book_id, date_read, progress, 
-                          progress_previous, pages_read, id
-                        from book_reading_progress
-                        where book_id = $bookId
-                        order by date_read desc;
-                        """
-                    )
-                        .map { row ->
-                            ReadingProgress(
-                                bookId = row[0] as String,
-                                dateRead = row[1] as String,
-                                lastPage = row[2] as Long,
-                                initialPage = row[3] as Long,
-                                pagesRead = row[4] as Long,
-                                id = row[5] as Long
-                            )
-                        }
-                    SharedState.updateReadingProgress(result)
-                }
+                val result = Repository.getReadingProgressByBookId(bookId ?: "")
+                SharedState.updateReadingProgress(result)
             } catch (e: Exception) {
                 Log.w("readingStats", "Error fetching book $bookId.", e)
             } finally {
