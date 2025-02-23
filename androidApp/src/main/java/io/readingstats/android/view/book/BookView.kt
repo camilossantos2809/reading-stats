@@ -120,7 +120,7 @@ fun BookView(navController: NavController, bookId: String?) {
                             }
                             IconButton(
                                 onClick = {
-                                    viewModel.deleteProgress(progress.dateRead)
+                                    viewModel.deleteProgress(progress.id)
                                 }
                             ) {
                                 Icon(

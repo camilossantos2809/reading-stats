@@ -3,7 +3,7 @@ package io.readingstats.android.view.readingProgress
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import io.readingstats.android.domain.ReadingProgress
+import io.readingstats.android.domain.NewReadingProgress
 import io.readingstats.android.repository.Repository
 import io.readingstats.android.view.SharedState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +45,7 @@ class ReadingProgressViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            val progress = ReadingProgress(
+            val progress = NewReadingProgress(
                 bookId = bookId,
                 dateRead = _formData.value.date,
                 initialPage = previousLastPage,
