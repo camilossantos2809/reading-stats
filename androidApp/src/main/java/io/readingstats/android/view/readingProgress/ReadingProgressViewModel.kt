@@ -3,15 +3,12 @@ package io.readingstats.android.view.readingProgress
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.firestore
-import io.readingstats.android.domain.toTimestamp
+import io.readingstats.android.domain.ReadingProgress
+import io.readingstats.android.repository.Repository
 import io.readingstats.android.view.SharedState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -30,10 +27,10 @@ class ReadingProgressViewModel : ViewModel() {
     val formData get() = _formData.asStateFlow()
     private val readingProgress = SharedState.readingProgress
 
-    fun saveProgress(bookId: String?,navController: NavController) {
+    fun saveProgress(bookId: String?, navController: NavController) {
         clearErrorMessage()
-        val lastPageInt = _formData.value.lastPage.toIntOrNull()
-        if (_formData.value.lastPage.isEmpty() || lastPageInt == null) {
+        val lastPageNumber = _formData.value.lastPage.toLongOrNull()
+        if (_formData.value.lastPage.isEmpty() || lastPageNumber == null) {
             updateErrorMessage("Last page should be a number and not empty")
             return
         }
@@ -48,21 +45,15 @@ class ReadingProgressViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
+            val progress = ReadingProgress(
+                bookId = bookId,
+                dateRead = _formData.value.date,
+                initialPage = previousLastPage,
+                lastPage = lastPageNumber,
+                pagesRead = lastPageNumber - previousLastPage
+            )
             try {
-                val db = Firebase.firestore
-                // TODO: Criar componente para alterar "goal"
-                val goalRef = db.collection("goals").document("2025")
-                val bookRef = db.collection("books").document(bookId)
-                val progressMap = mapOf(
-                    "goal" to goalRef,
-                    "book" to bookRef,
-                    "initialPage" to previousLastPage,
-                    "date" to _formData.value.date.toTimestamp(),
-                    "lastPage" to lastPageInt,
-                    "pagesRead" to lastPageInt - previousLastPage,
-                )
-                val readingProgressRef = db.collection("readingProgress").add(progressMap).await()
-                bookRef.update("readingProgress", FieldValue.arrayUnion(readingProgressRef)).await()
+                Repository.saveReadingProgress(progress)
                 _formData.value = FormData()
                 navController.popBackStack()
             } catch (e: Exception) {

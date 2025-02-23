@@ -37,7 +37,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import io.readingstats.android.Screens
-import io.readingstats.android.domain.formatToDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -110,7 +109,7 @@ fun BookView(navController: NavController, bookId: String?) {
                                 verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 TextContent(
-                                    text = progress.date.formatToDate(),
+                                    text = progress.dateRead,
                                 )
                                 TextContent(
                                     text = "${progress.pagesRead} pages read",
@@ -121,7 +120,7 @@ fun BookView(navController: NavController, bookId: String?) {
                             }
                             IconButton(
                                 onClick = {
-                                    viewModel.deleteProgress(progress.id)
+                                    viewModel.deleteProgress(progress.dateRead)
                                 }
                             ) {
                                 Icon(

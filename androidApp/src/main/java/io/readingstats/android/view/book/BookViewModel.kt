@@ -3,17 +3,12 @@ package io.readingstats.android.view.book
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.toObject
-import io.readingstats.android.domain.Book
 import io.readingstats.android.domain.ReadingProgress
+import io.readingstats.android.services.db.connect
 import io.readingstats.android.view.SharedState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 
 class BookViewModel(val bookId: String?) : ViewModel() {
@@ -26,23 +21,27 @@ class BookViewModel(val bookId: String?) : ViewModel() {
         _loading.value = true
         viewModelScope.launch {
             try {
-                val db = Firebase.firestore
-                val bookRef = db.collection("books").document(bookId ?: "")
-                val bookSnapshot = bookRef.get().await()
-                val result = bookSnapshot.toObject<Book>()
-                if (result != null) {
-                    SharedState.updateBook(result.copy(id = bookRef.id))
-
-                    val readingProgressList = result.readingProgress?.mapNotNull { ref ->
-                        try {
-                            val readingProgress = ref.get().await().toObject<ReadingProgress>()
-                            readingProgress?.copy(id = ref.id)
-                        } catch (e: Exception) {
-                            Log.w("readingStats", "Failed to fetch reading progress: ${ref.id}", e)
-                            null
+                connect().use {
+                    val result = it.query(
+                        """
+                        select 
+                          book_id, date_read, progress, 
+                          progress_previous, pages_read
+                        from book_reading_progress
+                        where book_id = $bookId
+                        order by date_read desc;
+                        """
+                    )
+                        .map { row ->
+                            ReadingProgress(
+                                bookId = row[0] as String,
+                                dateRead = row[1] as String,
+                                lastPage = row[2] as Long,
+                                initialPage = row[3] as Long,
+                                pagesRead = row[4] as Long
+                            )
                         }
-                    }.orEmpty()
-                    SharedState.updateReadingProgress(readingProgressList.sortedByDescending { it.lastPage })
+                    SharedState.updateReadingProgress(result)
                 }
             } catch (e: Exception) {
                 Log.w("readingStats", "Error fetching book $bookId.", e)
@@ -52,7 +51,7 @@ class BookViewModel(val bookId: String?) : ViewModel() {
         }
     }
 
-    fun deleteProgress(readingProgressId: String) {
+    fun deleteProgress(dateRead: String) {
         _loading.value = true
         if (bookId.isNullOrEmpty()) {
             Log.w("readingStats", "Book id is required to save progress")
@@ -60,16 +59,17 @@ class BookViewModel(val bookId: String?) : ViewModel() {
         }
         viewModelScope.launch {
             try {
-                val db = Firebase.firestore
-                val bookRef = db.collection("books").document(bookId)
-                val readingProgressRef =
-                    db.collection("readingProgress").document(readingProgressId)
-                bookRef.update("readingProgress", FieldValue.arrayRemove(readingProgressRef))
-                    .await()
-                readingProgressRef.delete().await()
+                connect().use {
+                    it.execute(
+                        """
+                        delete from book_reading_progress
+                        where book_id = $bookId and date_read = $dateRead;
+                        """
+                    )
+                }
                 fetchBook()
             } catch (e: Exception) {
-                Log.w("readingStats", "Error deleting reading progress $readingProgressId.", e)
+                Log.w("readingStats", "Error deleting reading progress $dateRead.", e)
             } finally {
                 _loading.value = false
             }
