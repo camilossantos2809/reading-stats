@@ -10,24 +10,18 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val provider = GoogleFont.Provider(
-    providerAuthority = "com.google.android.gms.fonts",
-    providerPackage = "com.google.android.gms",
-    certificates = R.array.com_google_android_gms_fonts_certs
-)
 
 //val fontName = GoogleFont("Grenze Gotisch")
-val fontName = GoogleFont("Balthazar")
+//val fontName = GoogleFont("Balthazar")
 //val fontName = GoogleFont("Neuton")
 
-val fontFamily = FontFamily(Font(googleFont = fontName, fontProvider = provider))
+val fontFamily = FontFamily(Font(resId = R.font.balthazar_regular, weight = FontWeight.Normal))
 
 @Composable
 fun MyApplicationTheme(
