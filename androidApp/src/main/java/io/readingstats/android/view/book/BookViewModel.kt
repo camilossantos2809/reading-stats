@@ -26,7 +26,7 @@ class BookViewModel(val bookId: String?) : ViewModel() {
                         """
                         select 
                           book_id, date_read, progress, 
-                          progress_previous, pages_read
+                          progress_previous, pages_read, id
                         from book_reading_progress
                         where book_id = $bookId
                         order by date_read desc;
@@ -38,7 +38,8 @@ class BookViewModel(val bookId: String?) : ViewModel() {
                                 dateRead = row[1] as String,
                                 lastPage = row[2] as Long,
                                 initialPage = row[3] as Long,
-                                pagesRead = row[4] as Long
+                                pagesRead = row[4] as Long,
+                                id = row[5] as Long
                             )
                         }
                     SharedState.updateReadingProgress(result)

@@ -1,12 +1,12 @@
 package io.readingstats.android.repository
 
-import io.readingstats.android.domain.ReadingProgress
+import io.readingstats.android.domain.NewReadingProgress
 import io.readingstats.android.services.db.connect
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 object Repository {
-    fun saveReadingProgress(progress: ReadingProgress) {
+    fun saveReadingProgress(progress: NewReadingProgress) {
         val dateRead: String =
             LocalDate.parse(progress.dateRead, DateTimeFormatter.ofPattern("ddMMyyyy"))
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
