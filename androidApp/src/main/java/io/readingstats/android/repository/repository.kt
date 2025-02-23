@@ -70,4 +70,17 @@ object Repository {
             )
         }
     }
+
+    fun deleteReadingProgress(id: Long) {
+        connect().use {
+            it.execute(
+                """
+                delete from book_reading_progress
+                where id = :id;
+                """,
+                mapOf("id" to id)
+            )
+        }
+    }
+
 }

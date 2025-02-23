@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.readingstats.android.repository.Repository
-import io.readingstats.android.services.db.connect
 import io.readingstats.android.view.SharedState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +30,7 @@ class BookViewModel(val bookId: String?) : ViewModel() {
         }
     }
 
-    fun deleteProgress(dateRead: String) {
+    fun deleteProgress(id: Long) {
         _loading.value = true
         if (bookId.isNullOrEmpty()) {
             Log.w("readingStats", "Book id is required to save progress")
@@ -39,17 +38,10 @@ class BookViewModel(val bookId: String?) : ViewModel() {
         }
         viewModelScope.launch {
             try {
-                connect().use {
-                    it.execute(
-                        """
-                        delete from book_reading_progress
-                        where book_id = $bookId and date_read = $dateRead;
-                        """
-                    )
-                }
+                Repository.deleteReadingProgress(id)
                 fetchBook()
             } catch (e: Exception) {
-                Log.w("readingStats", "Error deleting reading progress $dateRead.", e)
+                Log.w("readingStats", "Error deleting reading progress $id.", e)
             } finally {
                 _loading.value = false
             }
