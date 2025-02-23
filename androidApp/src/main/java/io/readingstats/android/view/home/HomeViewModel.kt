@@ -28,7 +28,7 @@ class HomeViewModel : ViewModel() {
             try {
                 _books.value = Repository.getAllBooks()
             } catch (e: Exception) {
-                Log.w("turso", "Error testing turso", e)
+                Log.w("turso", "Error on fetching books", e)
             }
         }
     }
