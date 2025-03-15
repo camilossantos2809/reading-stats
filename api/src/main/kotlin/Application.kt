@@ -7,6 +7,7 @@ import io.plugins.configureDatabases
 import io.plugins.configureHTTP
 import io.plugins.configureRouting
 import io.plugins.configureSerialization
+import io.repository.BookRepositorySQLite
 
 val development: Boolean = System.getProperty("io.ktor.development")?.toBoolean() ?: false
 
@@ -19,5 +20,5 @@ fun Application.module() {
     configureSerialization()
     configureDatabases()
     configureHTTP()
-    configureRouting()
+    configureRouting(BookRepositorySQLite)
 }
