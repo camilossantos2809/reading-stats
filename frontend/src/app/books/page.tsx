@@ -1,3 +1,4 @@
+import Link from "next/link";
 import BookGrid from "@/components/ag-grid";
 
 export default async function Books() {
@@ -9,12 +10,12 @@ export default async function Books() {
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">Books</h1>
         <div className="flex items-center gap-4">
-          <button className="px-4 py-2 rounded-lg border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-slate-400 dark:hover:border-slate-600">
+          <Link
+            href="/books/new"
+            className="px-4 py-2 rounded-lg border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-slate-400 dark:hover:border-slate-600"
+          >
             Add Book
-          </button>
-          <button className="px-4 py-2 rounded-lg border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-slate-400 dark:hover:border-slate-600">
-            Import Books
-          </button>
+          </Link>
         </div>
       </div>
       <div className="flex-grow h-[calc(100vh-12rem)] rounded-lg border">
