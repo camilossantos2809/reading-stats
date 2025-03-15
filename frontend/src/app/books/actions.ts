@@ -22,6 +22,17 @@ export async function addBook(_: unknown, formData: FormData) {
     redirect("/books");
   }
 
-  console.error(response.body);
-  return { message: "Failed to add book" };
+  console.error(response);
+
+  let message = "";
+  try {
+    const data = await response.json();
+    message = data.message;
+  } catch (e) {
+    console.error(`Failed to parse error message: ${e}`);
+  }
+
+  return {
+    message: `Failed to add book: ${response.status} ${response.statusText}. ${message}`,
+  };
 }
