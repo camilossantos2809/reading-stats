@@ -1,6 +1,7 @@
 "use client";
 
-import { AgGridReact } from "ag-grid-react";
+import Image from "next/image";
+import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
 import {
   AllCommunityModule,
   colorSchemeDarkBlue,
@@ -37,14 +38,23 @@ const columnDefs: GridOptions<Book>["columnDefs"] = [
     flex: 0.5,
   },
   {
+    headerName: "Cover",
+    field: "isbn",
+    cellRenderer: BookCover,
+    flex: 0.18,
+    editable: false,
+    sortable: false,
+    filter: false,
+  },
+  {
     headerName: "Name",
     field: "name",
-    flex: 2,
+    flex: 1.8,
   },
   {
     headerName: "Author",
     field: "author",
-    flex: 1.5,
+    flex: 1.25,
   },
   {
     headerName: "Pages",
@@ -56,7 +66,6 @@ const columnDefs: GridOptions<Book>["columnDefs"] = [
 
 const defaultColDef = {
   flex: 1,
-  minWidth: 100,
   resizable: true,
   sortable: true,
   filter: true,
@@ -92,5 +101,20 @@ export default function BookGrid({ books, onEdit }: BookGridProps) {
       onRowValueChanged={onRowValueChanged}
       editType="fullRow"
     />
+  );
+}
+
+function BookCover(params: CustomCellRendererProps) {
+  return (
+    <div className="relative rounded-sm overflow-hidden">
+      <Image
+        alt={`${params.value} cover`}
+        src={`https://covers.openlibrary.org/b/isbn/${params.value}-S.jpg`}
+        // fill
+        className="object-contain"
+        width={25}
+        height={25}
+      />
+    </div>
   );
 }

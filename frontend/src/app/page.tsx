@@ -1,9 +1,34 @@
 import Link from "next/link";
+import { BookCard } from "@/components/BookCard";
 
-export default function Home() {
+export default async function Home() {
+  const readingBooks = [
+    {
+      isbn: "1544512279",
+      name: "Can't Hurt Me: Master Your Mind and Defy the Odds",
+      author: "David Goggins",
+      pages: 357,
+      pagesRead: 120,
+    },
+    {
+      isbn: "978-8520942611",
+      name: "O Vermelho e o Negro",
+      author: "Sthendal",
+      pages: 588,
+      pagesRead: 500,
+    },
+    {
+      isbn: "9788535929423",
+      name: "O Som e a Fúria",
+      author: "William Faulkner",
+      pages: 412,
+      pagesRead: 180,
+    },
+  ];
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-balthazar-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start w-full">
         <div className="flex flex-col gap-4">
           <h1 className="text-4xl font-bold">Reading Stats</h1>
           <p className="text-lg">Keep track of your reading stats and goals</p>
@@ -36,6 +61,26 @@ export default function Home() {
               View your reading history and progress
             </p>
           </Link>
+        </div>
+        <div className="w-full">
+          <h2 className="text-3xl font-bold mb-8">Currently Reading</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {readingBooks?.length > 0 ? (
+              readingBooks.map((book) => (
+                <BookCard key={book.isbn} book={book} />
+              ))
+            ) : (
+              <div className="col-span-full p-6 border rounded-lg text-center">
+                <p className="text-gray-400">No books currently being read</p>
+                <a
+                  href="/books"
+                  className="inline-block mt-4 px-6 py-2 rounded-lg border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-slate-400 dark:hover:border-slate-600"
+                >
+                  Find a book to read
+                </a>
+              </div>
+            )}
+          </div>
         </div>
         <div className="w-full">
           <h2 className="text-3xl font-bold mb-8">Stats</h2>
