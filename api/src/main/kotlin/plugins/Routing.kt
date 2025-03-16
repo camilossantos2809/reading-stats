@@ -6,7 +6,9 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.model.Book
+import io.model.BookPutRequestBody
+import io.model.EditBook
+import io.model.NewBook
 import io.repository.BookAlreadyExistsException
 import io.repository.BookRepository
 import kotlinx.serialization.Serializable
@@ -26,15 +28,41 @@ fun Application.configureRouting(repository: BookRepository) {
         }
         post("/books") {
             try {
-                val book = call.receive<Book>()
+                val book = call.receive<NewBook>()
                 repository.addBook(book)
-                call.respond(HttpStatusCode.NoContent)
+                call.respond(HttpStatusCode.Created)
             } catch (ex: IllegalStateException) {
                 call.respond(HttpStatusCode.BadRequest)
             } catch (ex: JsonConvertException) {
                 call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid JSON: ${ex.message}"))
             } catch (ex: BookAlreadyExistsException) {
                 call.respond(HttpStatusCode.Conflict, ErrorResponse(ex.message))
+            } catch (ex: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Unexpected error: ${ex.message}"))
+            }
+        }
+        put("/books/{id}") {
+            val id = call.parameters["id"]
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@put
+            }
+            try {
+                val body = call.receive<BookPutRequestBody>()
+                repository.editBook(
+                    EditBook(
+                        id = id.toInt(),
+                        isbn = body.isbn,
+                        name = body.name,
+                        author = body.author,
+                        pages = body.pages,
+                    )
+                )
+                call.respond(HttpStatusCode.NoContent)
+            } catch (ex: IllegalStateException) {
+                call.respond(HttpStatusCode.BadRequest)
+            } catch (ex: JsonConvertException) {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid JSON: ${ex.message}"))
             } catch (ex: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Unexpected error: ${ex.message}"))
             }

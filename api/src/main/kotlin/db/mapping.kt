@@ -9,11 +9,12 @@ suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 object BookTable : Table("book") {
+    val id = integer("id").autoIncrement()
     val isbn = text("isbn", )
     val name = text("name", )
     val author = text("author", ).nullable()
     val pages = integer("pages").nullable()
 
-    override val primaryKey = PrimaryKey(isbn, name = "book_pk")
+    override val primaryKey = PrimaryKey(id, name = "book_pk")
 }
 
