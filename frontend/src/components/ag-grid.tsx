@@ -4,17 +4,19 @@ import { AgGridReact } from "ag-grid-react";
 import {
   AllCommunityModule,
   colorSchemeDarkBlue,
+  GetRowIdParams,
+  GridOptions,
   ModuleRegistry,
+  RowValueChangedEvent,
   themeAlpine,
 } from "ag-grid-community";
+import { useCallback } from "react";
+
+import { Book } from "@/types";
 
 interface BookGridProps {
-  books: Array<{
-    isbn: string;
-    name: string;
-    author: string | null;
-    pages: number | null;
-  }>;
+  books: Array<Book>;
+  onEdit: (book: Book) => Promise<{ message: string }>;
 }
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -27,36 +29,28 @@ const customTheme = themeAlpine.withPart(colorSchemeDarkBlue).withParams({
   selectedRowBackgroundColor: "rgba(148, 163, 184, 0.2)",
 });
 
-const columnDefs = [
+const columnDefs: GridOptions<Book>["columnDefs"] = [
+  { field: "id", hide: true },
   {
     headerName: "ISBN",
     field: "isbn",
-    sortable: true,
-    filter: true,
-    cellClass: "font-medium",
+    flex: 0.5,
   },
   {
     headerName: "Name",
     field: "name",
-    sortable: true,
-    filter: true,
     flex: 2,
-    cellClass: "font-medium",
   },
   {
     headerName: "Author",
     field: "author",
-    sortable: true,
-    filter: true,
     flex: 1.5,
   },
   {
     headerName: "Pages",
     field: "pages",
-    sortable: true,
-    filter: true,
-    width: 120,
     type: "numericColumn",
+    flex: 0.25,
   },
 ];
 
@@ -66,17 +60,37 @@ const defaultColDef = {
   resizable: true,
   sortable: true,
   filter: true,
+  editable: true,
 };
 
-export default function BookGrid({ books }: BookGridProps) {
+export default function BookGrid({ books, onEdit }: BookGridProps) {
+  const getRowId = useCallback(
+    (row: GetRowIdParams<Book>): string => String(row.data.id),
+    []
+  );
+
+  const onRowValueChanged = useCallback(
+    (event: RowValueChangedEvent<Book>) => {
+      const data = event.data;
+      if (data == null) {
+        return;
+      }
+      onEdit(data);
+    },
+    [onEdit]
+  );
+
   return (
-    <AgGridReact
+    <AgGridReact<Book>
       theme={customTheme}
       columnDefs={columnDefs}
       rowData={books}
       defaultColDef={defaultColDef}
-      pagination={true}
+      pagination
       paginationPageSize={25}
+      getRowId={getRowId}
+      onRowValueChanged={onRowValueChanged}
+      editType="fullRow"
     />
   );
 }

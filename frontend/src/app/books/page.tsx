@@ -1,5 +1,7 @@
 import Link from "next/link";
+
 import BookGrid from "@/components/ag-grid";
+import { editBook } from "./actions";
 
 export default async function Books() {
   const data = await fetch("http://localhost:8080/books");
@@ -19,7 +21,7 @@ export default async function Books() {
         </div>
       </div>
       <div className="flex-grow h-[calc(100vh-12rem)] rounded-lg border">
-        <BookGrid books={books} />
+        <BookGrid books={books} onEdit={editBook} />
       </div>
     </div>
   );
