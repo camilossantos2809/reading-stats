@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Progress } from "@/components/Progress";
+import { Progress } from "@/components/progress";
 
 interface BookCardProps {
   book: {

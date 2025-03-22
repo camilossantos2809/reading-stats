@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import BookGrid from "@/components/ag-grid";
+import BookGrid from "@/components/book-grid";
 import { editBook } from "./actions";
 
 export default async function Books() {

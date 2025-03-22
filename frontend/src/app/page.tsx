@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookCard } from "@/components/BookCard";
+import { BookCard } from "@/components/book-card";
 
 export default async function Home() {
   const readingBooks = [

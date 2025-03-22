@@ -1,7 +1,7 @@
 "use client";
 import { useActionState } from "react";
 import { addBook } from "@/app/books/actions";
-import { Input } from "@/components/form/Input";
+import { Input } from "@/components/form/input";
 
 const initialState = {
   message: "",
