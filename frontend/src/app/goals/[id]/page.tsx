@@ -3,6 +3,7 @@ import { Progress } from "@/components/progress";
 import type { Goal } from "@/types";
 import Image from "next/image";
 import { StatusFilter } from "@/components/status-filter";
+import { AddBookButton } from "@/components/add-book-button";
 
 // Mock data for a single goal with books
 const mockGoal: Goal = {
@@ -224,9 +225,7 @@ export default async function GoalDetail({ searchParams }: GoalDetailProps) {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold">Books in this Goal</h2>
-          <button className="px-6 py-2 rounded-lg border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-slate-400 dark:hover:border-slate-600">
-            Add Book
-          </button>
+          <AddBookButton />
         </div>
         <StatusFilter selectedStatus={selectedStatus} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
