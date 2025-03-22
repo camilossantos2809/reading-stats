@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { addGoal } from "@/app/goals/actions";
 import { Input } from "@/components/form/input";
 import Link from "next/link";
+import { BackButton } from "@/components/back-buttom";
 
 const initialState = {
   message: "",
@@ -14,6 +15,7 @@ export default function NewGoal() {
 
   return (
     <div className="flex flex-col min-h-screen p-8 sm:p-12">
+      <BackButton label="Back to Goals" path="/goals" />
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">Create New Reading Goal</h1>
         <p className="text-gray-400">Set your reading goal details below</p>

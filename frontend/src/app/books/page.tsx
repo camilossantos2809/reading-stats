@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import BookGrid from "@/components/book-grid";
 import { editBook } from "./actions";
+import { BackButton } from "@/components/back-buttom";
 
 export default async function Books() {
   const data = await fetch("http://localhost:8080/books");
@@ -9,6 +10,7 @@ export default async function Books() {
 
   return (
     <div className="flex flex-col min-h-screen p-8 sm:p-12">
+      <BackButton label="Back to Home" path="/" />
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">Books</h1>
         <div className="flex items-center gap-4">
