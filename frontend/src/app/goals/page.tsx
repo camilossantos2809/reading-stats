@@ -61,6 +61,27 @@ export default function Goals() {
     <div className="flex flex-col min-h-screen p-8 sm:p-12">
       <div className="mb-8 flex justify-between items-center">
         <div>
+          <div className="flex items-center gap-2 text-gray-400 mb-4">
+            <Link
+              href="/"
+              className="flex items-center gap-2 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              Back to Home
+            </Link>
+          </div>
           <h1 className="text-4xl font-bold mb-4">Reading Goals</h1>
           <p className="text-gray-400">
             Track your reading progress and achievements
@@ -73,7 +94,6 @@ export default function Goals() {
           New Goal
         </Link>
       </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {goals?.map((goal: Goal) => (
           <Link
@@ -101,9 +121,7 @@ export default function Goals() {
                   </p>
                 </div>
               </div>
-
               <Progress value={(goal.pagesRead / goal.pagesTotal) * 100} />
-
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="p-4 border rounded-lg">
                   <p className="text-sm text-gray-400 mb-1">Balance</p>
@@ -119,7 +137,6 @@ export default function Goals() {
                     {goal.balance ?? 0} pages
                   </p>
                 </div>
-
                 <div className="p-4 border rounded-lg">
                   <p className="text-sm text-gray-400 mb-1">Speed</p>
                   <p className="text-lg font-bold">
@@ -129,14 +146,12 @@ export default function Goals() {
                     </span>
                   </p>
                 </div>
-
                 <div className="p-4 border rounded-lg">
                   <p className="text-sm text-gray-400 mb-1">Above Goal</p>
                   <p className="text-lg font-bold text-green-500">
                     {goal.daysAboveGoal ?? 0} days
                   </p>
                 </div>
-
                 <div className="p-4 border rounded-lg">
                   <p className="text-sm text-gray-400 mb-1">Below Goal</p>
                   <p className="text-lg font-bold text-red-500">
@@ -147,7 +162,6 @@ export default function Goals() {
             </div>
           </Link>
         ))}
-
         {(!goals || goals.length === 0) && (
           <div className="col-span-full p-8 border rounded-lg text-center">
             <p className="text-gray-400 mb-4">No reading goals set yet</p>
