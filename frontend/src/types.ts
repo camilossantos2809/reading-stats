@@ -22,7 +22,7 @@ export interface Goal {
 
 type BookStatus = "reading" | "to_read" | "completed";
 
-interface GoalBook extends Book {
+export interface GoalBook extends Book {
   pagesRead: number;
   status: BookStatus;
   rating: number | null;

@@ -1,14 +1,18 @@
 import Link from "next/link";
-import { BookCard } from "@/components/book-card";
+import { GoalBook } from "@/types";
+import { BookCardWrapper } from "./books/book-card-wrapper";
 
 export default async function Home() {
-  const readingBooks = [
+  const readingBooks: GoalBook[] = [
     {
       isbn: "1544512279",
       name: "Can't Hurt Me: Master Your Mind and Defy the Odds",
       author: "David Goggins",
       pages: 357,
       pagesRead: 120,
+      id: 1,
+      rating: 4,
+      status: "reading",
     },
     {
       isbn: "978-8520942611",
@@ -16,6 +20,9 @@ export default async function Home() {
       author: "Sthendal",
       pages: 588,
       pagesRead: 500,
+      id: 2,
+      rating: 5,
+      status: "completed",
     },
     {
       isbn: "9788535929423",
@@ -23,6 +30,9 @@ export default async function Home() {
       author: "William Faulkner",
       pages: 412,
       pagesRead: 180,
+      id: 3,
+      rating: 4,
+      status: "reading",
     },
   ];
 
@@ -52,22 +62,13 @@ export default async function Home() {
               Set and track your reading goals
             </p>
           </Link>
-          <Link
-            href="/history"
-            className="p-6 border rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-slate-400 dark:hover:border-slate-600 group"
-          >
-            <h2 className="text-2xl font-bold mb-2">History</h2>
-            <p className="text-gray-400 group-hover:text-foreground transition-colors duration-300">
-              View your reading history and progress
-            </p>
-          </Link>
         </div>
         <div className="w-full">
           <h2 className="text-3xl font-bold mb-8">Currently Reading</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {readingBooks?.length > 0 ? (
               readingBooks.map((book) => (
-                <BookCard key={book.isbn} book={book} />
+                <BookCardWrapper key={book.isbn} book={book} />
               ))
             ) : (
               <div className="col-span-full p-6 border rounded-lg text-center">

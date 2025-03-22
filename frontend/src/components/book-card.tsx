@@ -1,21 +1,20 @@
 import Image from "next/image";
 import { Progress } from "@/components/progress";
+import { GoalBook } from "@/types";
 
 interface BookCardProps {
-  book: {
-    isbn: string;
-    name: string;
-    author: string | null;
-    pages: number;
-    pagesRead: number;
-  };
+  book: GoalBook;
+  onPress?: () => void;
 }
 
-export function BookCard({ book }: BookCardProps) {
-  const progress = Math.round((book.pagesRead / book.pages) * 100);
+export function BookCard({ book, onPress }: BookCardProps) {
+  const progress = Math.round((book.pagesRead / (book.pages ?? 0)) * 100);
 
   return (
-    <div className="flex gap-6 p-6 border rounded-lg transition-all duration-300 hover:shadow-lg hover:border-slate-400 dark:hover:border-slate-600">
+    <div
+      className="flex gap-6 p-6 border rounded-lg transition-all duration-300 hover:shadow-lg hover:border-slate-400 dark:hover:border-slate-600 cursor-pointer"
+      onClick={onPress}
+    >
       <div className="relative min-w-[125px] h-[180px] rounded-lg overflow-hidden">
         <Image
           alt={`${book.name} cover`}

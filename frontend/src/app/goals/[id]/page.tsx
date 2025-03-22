@@ -4,6 +4,7 @@ import type { Goal } from "@/types";
 import Image from "next/image";
 import { StatusFilter } from "@/components/status-filter";
 import { AddBookButton } from "@/components/add-book-button";
+import { BackButton } from "@/components/back-buttom";
 
 // Mock data for a single goal with books
 const mockGoal: Goal = {
@@ -163,6 +164,7 @@ export default async function GoalDetail({ searchParams }: GoalDetailProps) {
 
   return (
     <div className="flex flex-col min-h-screen p-8 sm:p-12 space-y-8">
+      <BackButton label="Back to Goals" path="/goals" />
       {/* Goal Card */}
       <div className="p-6 border rounded-lg space-y-6">
         <div className="flex justify-between items-start">
@@ -295,7 +297,6 @@ export default async function GoalDetail({ searchParams }: GoalDetailProps) {
                     >
                       {book.status.replace("_", " ")}
                     </span>
-
                     {book.rating && (
                       <div className="flex gap-0.5">
                         {[...Array(5)].map((_, i) => (
