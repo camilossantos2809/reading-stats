@@ -37,3 +37,4 @@ out/
 
 local.properties
 data/readingstats.db
+.kotlin/sessions/

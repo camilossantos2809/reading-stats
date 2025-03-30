@@ -10,17 +10,17 @@ suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
 
 object BookTable : Table("book") {
     val id = integer("id").autoIncrement()
-    val isbn = text("isbn", )
-    val name = text("name", )
-    val author = text("author", ).nullable()
+    val isbn = text("isbn")
+    val name = text("name")
+    val author = text("author").nullable()
     val pages = integer("pages").nullable()
 
     override val primaryKey = PrimaryKey(id, name = "book_pk")
 }
 
-object GoalTable: Table("goal") {
+object GoalTable : Table("goal") {
     val id = integer("id").autoIncrement()
-    val name = text("name", )
+    val name = text("name")
     val pagesTotal = integer("pages_total")
     val booksCount = integer("books_count").nullable()
     val balance = integer("balance").nullable()
@@ -31,4 +31,14 @@ object GoalTable: Table("goal") {
     val daysBelowGoal = integer("days_below_goal").nullable()
 
     override val primaryKey = PrimaryKey(id, name = "goal_pk")
+}
+
+object BookReadingProgressTable : Table("book_reading_progress") {
+    val id = integer("id").autoIncrement()
+    val bookId = integer("book_id").references(BookTable.id)
+    val dateRead = text("date_read")
+    val progress = integer("progress")
+    val progressPrevious = integer("progress_previous").default(0)
+    val pagesRead = integer("pages_read").default(0)
+
 }

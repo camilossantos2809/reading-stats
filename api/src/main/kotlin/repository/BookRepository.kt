@@ -1,20 +1,19 @@
 package io.repository
 
+import io.db.BookReadingProgressTable
 import io.db.BookTable
 import io.db.suspendTransaction
-import io.model.Book
-import io.model.EditBook
-import io.model.NewBook
+import io.model.*
 import org.jetbrains.exposed.exceptions.ExposedSQLException
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 interface BookRepository {
     suspend fun getAllBooks(): List<Book>
     suspend fun addBook(book: NewBook)
     suspend fun editBook(book: EditBook)
+    suspend fun addReadingProgress(newProgress: NewBookReadingProgress)
+    suspend fun getReadingProgress(bookId: Int): GetReadingProgressResponse?
 }
 
 
@@ -64,6 +63,46 @@ object BookRepositorySQLite : BookRepository {
             }
         }
     }
+
+    override suspend fun addReadingProgress(newProgress: NewBookReadingProgress) {
+        suspendTransaction {
+            BookReadingProgressTable.select(BookReadingProgressTable.progress).where {
+                BookReadingProgressTable.bookId eq newProgress.bookId
+            }.orderBy(BookReadingProgressTable.dateRead to SortOrder.DESC).firstOrNull()?.let { previousProgress ->
+                val newPagesRead = newProgress.lastPageRead - previousProgress[BookReadingProgressTable.progress]
+                BookReadingProgressTable.insert {
+                    it[bookId] = newProgress.bookId
+                    it[dateRead] = newProgress.dateRead
+                    it[progressPrevious] = previousProgress[progress]
+                    it[progress] = newProgress.lastPageRead
+                    it[pagesRead] = newPagesRead
+                }
+            }
+        }
+    }
+
+    override suspend fun getReadingProgress(bookId: Int): GetReadingProgressResponse? {
+        return suspendTransaction {
+            val book = BookTable.selectAll().where { BookTable.id eq bookId }.firstOrNull()?.toBook()
+            if (book == null) {
+                return@suspendTransaction null
+            }
+            val progress = BookReadingProgressTable.selectAll().where {
+                BookReadingProgressTable.bookId eq bookId
+            }.orderBy(BookReadingProgressTable.dateRead to SortOrder.DESC)
+                .map {
+                    BookReadingProgress(
+                        id = it[BookReadingProgressTable.id],
+                        dateRead = it[BookReadingProgressTable.dateRead],
+                        progressPrevious = it[BookReadingProgressTable.progressPrevious],
+                        progress = it[BookReadingProgressTable.progress],
+                        pagesRead = it[BookReadingProgressTable.pagesRead],
+                    )
+                }
+
+            return@suspendTransaction GetReadingProgressResponse(book = book, progress = progress)
+        }
+    }
 }
 
 object BookRepositoryFake : BookRepository {
@@ -81,4 +120,14 @@ object BookRepositoryFake : BookRepository {
     override suspend fun editBook(book: EditBook) {
         TODO("Not yet implemented")
     }
+
+    override suspend fun addReadingProgress(newProgress: NewBookReadingProgress) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getReadingProgress(bookId: Int): GetReadingProgressResponse? {
+        TODO("Not yet implemented")
+    }
+
+
 }

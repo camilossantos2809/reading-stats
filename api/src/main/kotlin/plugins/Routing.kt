@@ -6,9 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.model.BookPutRequestBody
-import io.model.EditBook
-import io.model.NewBook
+import io.model.*
 import io.repository.BookAlreadyExistsException
 import io.repository.BookRepository
 import io.repository.GoalRepositorySQLite
@@ -68,7 +66,44 @@ fun Application.configureRouting(repository: BookRepository) {
                 call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Unexpected error: ${ex.message}"))
             }
         }
-        get("/goals"){
+        post("/books/{id}/reading-progress") {
+            val bookId = call.parameters["id"]
+            if (bookId == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+            try {
+                val body = call.receive<NewBookReadingProgressBody>()
+                repository.addReadingProgress(
+                    NewBookReadingProgress(
+                        bookId = bookId.toInt(),
+                        dateRead = body.dateRead,
+                        lastPageRead = body.lastPageRead
+                    )
+                )
+                call.respond(HttpStatusCode.Created)
+            } catch (ex: IllegalStateException) {
+                call.respond(HttpStatusCode.BadRequest)
+            } catch (ex: JsonConvertException) {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid JSON: ${ex.message}"))
+            } catch (ex: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Unexpected error: ${ex.message}"))
+            }
+        }
+        get("/books/{id}/reading-progress") {
+            val bookId = call.parameters["id"]
+            if (bookId == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+            val result = repository.getReadingProgress(bookId.toInt())
+            if (result == null) {
+                call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
+            call.respond(result)
+        }
+        get("/goals") {
             //TODO: separate routes
             call.respond(GoalRepositorySQLite.getAllGoals())
         }
