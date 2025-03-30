@@ -66,17 +66,25 @@ object BookRepositorySQLite : BookRepository {
 
     override suspend fun addReadingProgress(newProgress: NewBookReadingProgress) {
         suspendTransaction {
-            BookReadingProgressTable.select(BookReadingProgressTable.progress).where {
+            val previousProgress = BookReadingProgressTable.select(BookReadingProgressTable.progress).where {
                 BookReadingProgressTable.bookId eq newProgress.bookId
-            }.orderBy(BookReadingProgressTable.dateRead to SortOrder.DESC).firstOrNull()?.let { previousProgress ->
-                val newPagesRead = newProgress.lastPageRead - previousProgress[BookReadingProgressTable.progress]
-                BookReadingProgressTable.insert {
-                    it[bookId] = newProgress.bookId
-                    it[dateRead] = newProgress.dateRead
-                    it[progressPrevious] = previousProgress[progress]
-                    it[progress] = newProgress.lastPageRead
-                    it[pagesRead] = newPagesRead
-                }
+            }.orderBy(
+                BookReadingProgressTable.dateRead to SortOrder.DESC,
+                BookReadingProgressTable.id to SortOrder.DESC
+            ).firstOrNull()
+
+            val newPagesRead =
+                newProgress.lastPageRead - (previousProgress?.get(BookReadingProgressTable.progress) ?: 0)
+
+            if(newPagesRead <= 0) {
+                throw BookRepositoryException("Last page read cannot be less than previous progress")
+            }
+            BookReadingProgressTable.insert {
+                it[bookId] = newProgress.bookId
+                it[dateRead] = newProgress.dateRead
+                it[progressPrevious] = previousProgress?.get(progress) ?: 0
+                it[progress] = newProgress.lastPageRead
+                it[pagesRead] = newPagesRead
             }
         }
     }
@@ -89,7 +97,10 @@ object BookRepositorySQLite : BookRepository {
             }
             val progress = BookReadingProgressTable.selectAll().where {
                 BookReadingProgressTable.bookId eq bookId
-            }.orderBy(BookReadingProgressTable.dateRead to SortOrder.DESC)
+            }.orderBy(
+                BookReadingProgressTable.dateRead to SortOrder.DESC,
+                BookReadingProgressTable.id to SortOrder.DESC
+            )
                 .map {
                     BookReadingProgress(
                         id = it[BookReadingProgressTable.id],

@@ -3,12 +3,14 @@ package io.plugins
 import io.ktor.http.*
 import io.ktor.serialization.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.model.*
 import io.repository.BookAlreadyExistsException
 import io.repository.BookRepository
+import io.repository.BookRepositoryException
 import io.repository.GoalRepositorySQLite
 import kotlinx.serialization.Serializable
 
@@ -86,8 +88,8 @@ fun Application.configureRouting(repository: BookRepository) {
                 call.respond(HttpStatusCode.BadRequest)
             } catch (ex: JsonConvertException) {
                 call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid JSON: ${ex.message}"))
-            } catch (ex: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Unexpected error: ${ex.message}"))
+            }catch(ex:BookRepositoryException){
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse(ex.message))
             }
         }
         get("/books/{id}/reading-progress") {
