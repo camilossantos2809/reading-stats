@@ -14,16 +14,16 @@ export default async function Home() {
       status: "reading",
       rating: 0,
     },
-    // {
-    //   isbn: "1544512279",
-    //   name: "Can't Hurt Me: Master Your Mind and Defy the Odds",
-    //   author: "David Goggins",
-    //   pages: 357,
-    //   pagesRead: 120,
-    //   id: 9,
-    //   rating: 4,
-    //   status: "reading",
-    // },
+    {
+      isbn: "978-8535907445",
+      name: "Declínio e queda do império romano",
+      author: "Edward Gibbon",
+      pages: 583,
+      pagesRead: 308,
+      id: 13,
+      rating: 0,
+      status: "reading",
+    },
     // {
     //   isbn: "978-8520942611",
     //   name: "O Vermelho e o Negro",
@@ -94,7 +94,7 @@ export default async function Home() {
           </div>
         </div>
         <div className="w-full">
-          <h2 className="text-3xl font-bold mb-8">Stats</h2>
+          <h2 className="text-3xl font-bold mb-8">Stats Current Year</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="p-6 border rounded-lg transition-all duration-300 hover:shadow-lg hover:border-slate-400 dark:hover:border-slate-600">
               <p className="text-gray-400">Books Read</p>
@@ -105,11 +105,11 @@ export default async function Home() {
               <p className="text-4xl font-bold">0</p>
             </div>
             <div className="p-6 border rounded-lg transition-all duration-300 hover:shadow-lg hover:border-slate-400 dark:hover:border-slate-600">
-              <p className="text-gray-400">Reading Time</p>
-              <p className="text-4xl font-bold">0h</p>
+              <p className="text-gray-400">Average Pages Read Per Day</p>
+              <p className="text-4xl font-bold">0</p>
             </div>
             <div className="p-6 border rounded-lg transition-all duration-300 hover:shadow-lg hover:border-slate-400 dark:hover:border-slate-600">
-              <p className="text-gray-400">Current Streak</p>
+              <p className="text-gray-400">Average Pages Read Per Month</p>
               <p className="text-4xl font-bold">0</p>
             </div>
           </div>

@@ -27,3 +27,14 @@ export interface GoalBook extends Book {
   status: BookStatus;
   rating: number | null;
 }
+
+export type ReadingProgress = {
+  book: Book;
+  progress: {
+    id: string;
+    dateRead: string;
+    progressPrevious: number;
+    progress: number;
+    pagesRead: number;
+  }[];
+};

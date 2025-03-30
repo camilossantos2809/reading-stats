@@ -1,19 +1,9 @@
 import { BackButton } from "@/components/back-buttom";
 import { BookCard } from "@/components/book-card";
 import { NewReadingProgressForm } from "./new-reading-progress-form";
-import { Book } from "@/types";
+import { ReadingProgress } from "@/types";
 import { DeleteProgressButton } from "./delete-progress-button";
-
-interface ReadingProgress {
-  book: Book;
-  progress: {
-    id: string;
-    dateRead: string;
-    progressPrevious: number;
-    progress: number;
-    pagesRead: number;
-  }[];
-}
+import { ReadingProgressChart } from "./reading-progress-chart";
 
 type HistoryProps = {
   params: Promise<{
@@ -32,18 +22,28 @@ export default async function History({ params }: HistoryProps) {
   return (
     <div className="flex flex-col min-h-screen p-8 sm:p-12 space-y-8">
       <BackButton label="Back to Home" path={`/`} />
-      <div className="max-w-2xl">
-        <BookCard
-          book={{
-            ...progressData.book,
-            pagesRead: 120,
-            status: "reading",
-            rating: 4,
-          }}
-        />
+
+      {/* Top section with book card and form */}
+      <div className="flex gap-8 items-start">
+        <div className="w-1/2">
+          <BookCard
+            book={{
+              ...progressData.book,
+              pagesRead: progressData.progress?.[0]?.progress ?? 0,
+              status: "reading",
+              rating: 4,
+            }}
+          />
+        </div>
+        <div className="w-1/2">
+          <NewReadingProgressForm bookId={bookId} />
+        </div>
       </div>
-      <NewReadingProgressForm bookId={bookId} />
-      <div className="max-w-2xl space-y-4">
+      <div className="w-full h-[400px]">
+        <ReadingProgressChart progress={progressData.progress} />
+      </div>
+      {/* Progress list section */}
+      <div className="w-full space-y-4">
         <h2 className="text-xl font-bold">Previous Progress</h2>
         <ul className="space-y-2">
           {progressData.progress.map((entry, index) => (
