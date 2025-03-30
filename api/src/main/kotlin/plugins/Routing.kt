@@ -11,6 +11,7 @@ import io.model.EditBook
 import io.model.NewBook
 import io.repository.BookAlreadyExistsException
 import io.repository.BookRepository
+import io.repository.GoalRepositorySQLite
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -66,6 +67,10 @@ fun Application.configureRouting(repository: BookRepository) {
             } catch (ex: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Unexpected error: ${ex.message}"))
             }
+        }
+        get("/goals"){
+            //TODO: separate routes
+            call.respond(GoalRepositorySQLite.getAllGoals())
         }
     }
 }

@@ -18,3 +18,17 @@ object BookTable : Table("book") {
     override val primaryKey = PrimaryKey(id, name = "book_pk")
 }
 
+object GoalTable: Table("goal") {
+    val id = integer("id").autoIncrement()
+    val name = text("name", )
+    val pagesTotal = integer("pages_total")
+    val booksCount = integer("books_count").nullable()
+    val balance = integer("balance").nullable()
+    val speedIdeal = integer("speed_ideal").nullable()
+    val speedAverage = integer("speed_average").nullable()
+    val pagesRead = integer("pages_read").default(0)
+    val daysAboveGoal = integer("days_above_goal").nullable()
+    val daysBelowGoal = integer("days_below_goal").nullable()
+
+    override val primaryKey = PrimaryKey(id, name = "goal_pk")
+}

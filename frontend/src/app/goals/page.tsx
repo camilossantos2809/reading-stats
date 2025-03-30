@@ -54,9 +54,9 @@ const mockGoals: Goal[] = [
   },
 ];
 
-export default function Goals() {
-  // Replace API call with mock data
-  const goals = mockGoals;
+export default async function Goals() {
+  const data = await fetch("http://localhost:8080/goals");
+  const goals = await data.json();
 
   return (
     <div className="flex flex-col min-h-screen p-8 sm:p-12">
