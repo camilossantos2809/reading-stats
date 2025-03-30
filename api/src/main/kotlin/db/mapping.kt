@@ -40,5 +40,12 @@ object BookReadingProgressTable : Table("book_reading_progress") {
     val progress = integer("progress")
     val progressPrevious = integer("progress_previous").default(0)
     val pagesRead = integer("pages_read").default(0)
+}
 
+object BookGoalTable : Table("book_goal") {
+    val id = integer("id").autoIncrement()
+    val bookId = integer("book_id").references(BookTable.id)
+    val goalId = integer("goal_id").references(GoalTable.id)
+    val status = text("status").default("to read")
+    val rating = integer("rating").nullable()
 }

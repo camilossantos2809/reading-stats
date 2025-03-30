@@ -1,8 +1,6 @@
 package io.repository
 
-import io.db.BookReadingProgressTable
-import io.db.BookTable
-import io.db.suspendTransaction
+import io.db.*
 import io.model.*
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
@@ -14,7 +12,7 @@ interface BookRepository {
     suspend fun editBook(book: EditBook)
     suspend fun addReadingProgress(newProgress: NewBookReadingProgress)
     suspend fun getReadingProgress(bookId: Int): GetReadingProgressResponse?
-    suspend fun deleteReadingProgress(readingProgressId:Int)
+    suspend fun deleteReadingProgress(readingProgressId: Int)
 }
 
 
@@ -77,7 +75,7 @@ object BookRepositorySQLite : BookRepository {
             val newPagesRead =
                 newProgress.lastPageRead - (previousProgress?.get(BookReadingProgressTable.progress) ?: 0)
 
-            if(newPagesRead <= 0) {
+            if (newPagesRead <= 0) {
                 throw BookRepositoryException("Last page read cannot be less than previous progress")
             }
             BookReadingProgressTable.insert {
@@ -86,6 +84,34 @@ object BookRepositorySQLite : BookRepository {
                 it[progressPrevious] = previousProgress?.get(progress) ?: 0
                 it[progress] = newProgress.lastPageRead
                 it[pagesRead] = newPagesRead
+            }
+
+            val bookGoal = BookGoalTable.select(BookGoalTable.goalId).where {
+                BookGoalTable.bookId eq newProgress.bookId
+            }.firstOrNull()
+
+            if(bookGoal == null){
+                return@suspendTransaction
+            }
+
+            val goalPagesRead = BookReadingProgressTable.join(
+                BookGoalTable,
+                JoinType.INNER,
+                BookReadingProgressTable.bookId,
+                BookGoalTable.bookId
+            ).join(
+                GoalTable,
+                JoinType.INNER,
+                BookGoalTable.goalId,
+                GoalTable.id
+            ).select(
+                BookReadingProgressTable.pagesRead.sum()
+            ).where {
+                GoalTable.id eq bookGoal[BookGoalTable.goalId]
+            }
+
+            GoalTable.update({ GoalTable.id eq bookGoal[BookGoalTable.goalId] }) {
+                it[pagesRead] = goalPagesRead
             }
         }
     }
@@ -118,7 +144,36 @@ object BookRepositorySQLite : BookRepository {
 
     override suspend fun deleteReadingProgress(readingProgressId: Int) {
         return suspendTransaction {
+            addLogger(StdOutSqlLogger)
+            val bookGoal = BookGoalTable.select(BookGoalTable.goalId).where {
+                BookGoalTable.bookId eq readingProgressId
+            }.firstOrNull()
+
             BookReadingProgressTable.deleteWhere { id eq readingProgressId }
+
+            if(bookGoal == null){
+                return@suspendTransaction
+            }
+// TODO: Check if this is correct
+            val goalPagesRead = BookReadingProgressTable.join(
+                BookGoalTable,
+                JoinType.INNER,
+                BookReadingProgressTable.bookId,
+                BookGoalTable.bookId
+            ).join(
+                GoalTable,
+                JoinType.INNER,
+                BookGoalTable.goalId,
+                GoalTable.id
+            ).select(
+                BookReadingProgressTable.pagesRead.sum()
+            ).where {
+                GoalTable.id eq bookGoal[BookGoalTable.goalId]
+            }
+
+            GoalTable.update({ GoalTable.id eq bookGoal[BookGoalTable.goalId] }) {
+                it[pagesRead] = goalPagesRead
+            }
         }
     }
 }
