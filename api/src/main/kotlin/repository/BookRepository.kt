@@ -14,6 +14,7 @@ interface BookRepository {
     suspend fun editBook(book: EditBook)
     suspend fun addReadingProgress(newProgress: NewBookReadingProgress)
     suspend fun getReadingProgress(bookId: Int): GetReadingProgressResponse?
+    suspend fun deleteReadingProgress(readingProgressId:Int)
 }
 
 
@@ -114,6 +115,12 @@ object BookRepositorySQLite : BookRepository {
             return@suspendTransaction GetReadingProgressResponse(book = book, progress = progress)
         }
     }
+
+    override suspend fun deleteReadingProgress(readingProgressId: Int) {
+        return suspendTransaction {
+            BookReadingProgressTable.deleteWhere { id eq readingProgressId }
+        }
+    }
 }
 
 object BookRepositoryFake : BookRepository {
@@ -137,6 +144,10 @@ object BookRepositoryFake : BookRepository {
     }
 
     override suspend fun getReadingProgress(bookId: Int): GetReadingProgressResponse? {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteReadingProgress(readingProgressId: Int) {
         TODO("Not yet implemented")
     }
 

@@ -105,6 +105,15 @@ fun Application.configureRouting(repository: BookRepository) {
             }
             call.respond(result)
         }
+        delete("/reading-progress/{id}") {
+            val id = call.parameters["id"]
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@delete
+            }
+            repository.deleteReadingProgress(id.toInt())
+            call.respond(HttpStatusCode.NoContent)
+        }
         get("/goals") {
             //TODO: separate routes
             call.respond(GoalRepositorySQLite.getAllGoals())

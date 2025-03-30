@@ -2,10 +2,12 @@ import { BackButton } from "@/components/back-buttom";
 import { BookCard } from "@/components/book-card";
 import { NewReadingProgressForm } from "./new-reading-progress-form";
 import { Book } from "@/types";
+import { DeleteProgressButton } from "./delete-progress-button";
 
 interface ReadingProgress {
   book: Book;
   progress: {
+    id: string;
     dateRead: string;
     progressPrevious: number;
     progress: number;
@@ -50,9 +52,12 @@ export default async function History({ params }: HistoryProps) {
               className="p-5 border border-gray-700 rounded-lg bg-gray-900 dark:bg-gray-800 shadow-sm hover:shadow-lg transition-shadow duration-200"
             >
               <div className="flex flex-col gap-3">
-                <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">
-                  {entry.dateRead}
-                </p>
+                <div className="flex justify-between items-center">
+                  <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">
+                    {entry.dateRead}
+                  </p>
+                  <DeleteProgressButton progressId={entry.id} />
+                </div>
                 {/* Main Content */}
                 <div className="flex justify-between items-center gap-4">
                   {/* Left: Book Info */}

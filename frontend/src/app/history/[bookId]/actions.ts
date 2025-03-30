@@ -54,3 +54,33 @@ export async function addReadingProgress(
     status: "error",
   };
 }
+
+export async function deleteReadingProgress(progressId: string) {
+  const response = await fetch(
+    `http://localhost:8080/reading-progress/${progressId}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  if (response.ok) {
+    revalidatePath("/history/[bookId]");
+    return {
+      message: "Reading progress deleted successfully",
+      status: "success",
+    };
+  }
+
+  let message = "";
+  try {
+    const data = await response.json();
+    message = data.message;
+  } catch (error) {
+    console.error(`Failed to parse error message: ${error}`);
+  }
+
+  return {
+    message: `Failed to delete reading progress: ${response.status} ${response.statusText}. ${message}`,
+    status: "error" as const,
+  };
+}
