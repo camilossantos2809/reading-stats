@@ -1,11 +1,12 @@
 package io.model
 
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class BookReadingProgress(
     val id: Int,
-    val dateRead: String,
+    val dateRead: LocalDateTime,
     val progress: Int,
     val progressPrevious: Int = 0,
     val pagesRead: Int = 0

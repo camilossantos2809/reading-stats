@@ -1,13 +1,13 @@
 package io.repository
 
 import io.db.GoalTable
-import io.db.suspendTransaction
 import io.model.Goal
 import io.model.NewGoal
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 
 interface GoalRepository {
     suspend fun getAllGoals(): List<Goal>

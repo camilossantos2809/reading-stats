@@ -10,11 +10,9 @@ group = "io"
 version = "0.0.1"
 
 val localProperties = Properties().apply {
-    val localProperties = Properties().apply {
-        val file = file("local.properties")
-        if (file.exists()) {
-            load(file.reader())
-        }
+    val file = file("local.properties")
+    if (file.exists()) {
+        load(file.reader())
     }
 }
 
@@ -35,7 +33,7 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
-    implementation(libs.exposed.dao)
+    implementation(libs.exposed.datetime)
     implementation(libs.postgresql)
     implementation(libs.ktor.server.cors)
     implementation(libs.ktor.server.cio)

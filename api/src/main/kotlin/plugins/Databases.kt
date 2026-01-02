@@ -1,7 +1,7 @@
 package io.plugins
 
 import io.ktor.server.application.*
-import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.v1.jdbc.Database
 
 
 fun Application.configureDatabases() {

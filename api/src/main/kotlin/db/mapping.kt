@@ -1,12 +1,8 @@
 package io.db
 
-import kotlinx.coroutines.Dispatchers
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.datetime.datetime
 
-suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
-    newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 object BookTable : Table("book") {
     val id = integer("id").autoIncrement()
@@ -36,10 +32,8 @@ object GoalTable : Table("goal") {
 object BookReadingProgressTable : Table("book_reading_progress") {
     val id = integer("id").autoIncrement()
     val bookId = integer("book_id").references(BookTable.id)
-    val dateRead = text("date_read")
-    val progress = integer("progress")
-    val progressPrevious = integer("progress_previous").default(0)
-    val pagesRead = integer("pages_read").default(0)
+    val recordedAt = datetime("recorded_at")
+    val currentPage = integer("current_page").default(0)
 }
 
 object BookGoalTable : Table("book_goal") {
