@@ -5,13 +5,17 @@ import io.db.BookReadingProgressTable
 import io.db.BookTable
 import io.db.GoalTable
 import io.model.*
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.core.statements.StatementType
 import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import kotlin.time.Clock
 
 
 interface BookRepository {
@@ -36,7 +40,7 @@ object BookRepositorySQLite : BookRepository {
     )
 
     override suspend fun getAllBooks() = transaction {
-        BookTable.selectAll().map { it.toBook() }
+        BookTable.selectAll().orderBy(BookTable.id to SortOrder.DESC).map { it.toBook() }
     }
 
     override suspend fun getReadingBooks() = suspendTransaction {
@@ -113,9 +117,12 @@ object BookRepositorySQLite : BookRepository {
 
     override suspend fun addReadingProgress(newProgress: NewBookReadingProgress) {
         suspendTransaction {
+            val recodedAtDate = LocalDate.parse(newProgress.dateRead)
+            val currentTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            
             BookReadingProgressTable.insert {
                 it[bookId] = newProgress.bookId
-                it[recordedAt] = LocalDateTime.parse("${newProgress.dateRead}T00:00:00")
+                it[recordedAt] = LocalDateTime(recodedAtDate, currentTime.time)
                 it[currentPage] = newProgress.lastPageRead
             }
 
