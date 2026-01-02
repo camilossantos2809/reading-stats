@@ -15,47 +15,10 @@ interface Goal {
   daysBelowGoal: number | null;
 }
 
-const mockGoals: Goal[] = [
-  {
-    id: 1,
-    name: "2024 Reading Challenge",
-    pagesTotal: 5000,
-    pagesRead: 2150,
-    booksCount: 12,
-    balance: 150,
-    speedIdeal: 25,
-    speedAverage: 28,
-    daysAboveGoal: 45,
-    daysBelowGoal: 15,
-  },
-  {
-    id: 2,
-    name: "Summer Reading",
-    pagesTotal: 1200,
-    pagesRead: 800,
-    booksCount: 3,
-    balance: -50,
-    speedIdeal: 20,
-    speedAverage: 18,
-    daysAboveGoal: 20,
-    daysBelowGoal: 25,
-  },
-  {
-    id: 3,
-    name: "Technical Books",
-    pagesTotal: 2000,
-    pagesRead: 200,
-    booksCount: 4,
-    balance: -100,
-    speedIdeal: 15,
-    speedAverage: 10,
-    daysAboveGoal: 5,
-    daysBelowGoal: 30,
-  },
-];
-
 export default async function Goals() {
-  const data = await fetch("http://localhost:8080/goals");
+  const data = await fetch("http://localhost:8080/goals", {
+    cache: "no-store",
+  });
   const goals = await data.json();
 
   return (

@@ -1,4 +1,4 @@
-type FormStatusProps = {
+export type FormStatusProps = {
   message: string | null;
   status: "success" | "error" | "none";
 };

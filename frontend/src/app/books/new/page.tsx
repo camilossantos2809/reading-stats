@@ -3,10 +3,11 @@ import { useActionState } from "react";
 import { addBook } from "@/app/books/actions";
 import { Input } from "@/components/form/input";
 import Link from "next/link";
-import { FormStatus } from "@/components/form/FormStatus";
+import { FormStatus, FormStatusProps } from "@/components/form/FormStatus";
 
-const initialState = {
+const initialState: FormStatusProps = {
   message: "",
+  status: "none",
 };
 
 export default function NewBook() {
@@ -19,7 +20,7 @@ export default function NewBook() {
         <p className="text-gray-400">Fill in the book details below</p>
       </div>
       <form action={formAction} className="max-w-2xl space-y-6">
-        <FormStatus message={state?.message} />
+        <FormStatus message={state?.message} status={state?.status ?? "none"} />
         <Input label="ISBN" id="isbn" name="isbn" type="text" required />
         <Input label="Name" id="name" name="name" type="text" required />
         <Input label="Author" id="author" name="author" type="text" />

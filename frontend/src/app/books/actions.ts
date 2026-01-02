@@ -3,8 +3,12 @@
 import { redirect } from "next/navigation";
 
 import { Book } from "@/types";
+import { FormStatusProps } from "@/components/form/FormStatus";
 
-export async function addBook(_: unknown, formData: FormData) {
+export async function addBook(
+  _: unknown,
+  formData: FormData
+): Promise<FormStatusProps> {
   const book = {
     isbn: formData.get("isbn"),
     name: formData.get("name"),
@@ -22,6 +26,7 @@ export async function addBook(_: unknown, formData: FormData) {
   } catch (error) {
     return {
       message: `Failed to add book: ${error}`,
+      status: "error",
     };
   }
 
@@ -39,6 +44,7 @@ export async function addBook(_: unknown, formData: FormData) {
 
   return {
     message: `Failed to add book: ${response.status} ${response.statusText}. ${message}`,
+    status: "success",
   };
 }
 

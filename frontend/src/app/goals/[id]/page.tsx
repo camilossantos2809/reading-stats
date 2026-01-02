@@ -324,8 +324,10 @@ export default async function GoalDetail({ searchParams }: GoalDetailProps) {
         {filteredBooks.length === 0 && (
           <div className="p-8 border rounded-lg text-center">
             <p className="text-gray-400 mb-4">
-              {selectedStatus
-                ? `No ${selectedStatus.replace("_", " ")} books in this goal`
+              {selectedStatus != null
+                ? `No ${selectedStatus
+                    ?.toString()
+                    .replace("_", " ")} books in this goal`
                 : "No books added to this goal yet"}
             </p>
             <button className="px-6 py-2 rounded-lg border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-slate-400 dark:hover:border-slate-600">

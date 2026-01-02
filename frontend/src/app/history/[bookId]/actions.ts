@@ -1,11 +1,12 @@
 "use server";
 
+import { FormStatusProps } from "@/components/form/FormStatus";
 import { revalidatePath } from "next/cache";
 
 export type State = {
   message: string;
   bookId: string;
-  status: "success" | "error" | "none";
+  status: FormStatusProps["status"];
 };
 
 type AddReadingProgressRequest = {
@@ -16,7 +17,7 @@ type AddReadingProgressRequest = {
 export async function addReadingProgress(
   { bookId }: State,
   formData: FormData
-) {
+): Promise<State> {
   const newProgress: AddReadingProgressRequest = {
     dateRead: formData.get("dateRead") as string,
     lastPageRead: Number(formData.get("lastPageRead")),
