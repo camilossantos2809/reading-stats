@@ -32,7 +32,6 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation(libs.exposed.dao)
     implementation(libs.postgresql)
-    implementation("org.xerial:sqlite-jdbc:3.44.1.0")
     implementation(libs.ktor.server.cors)
     implementation(libs.ktor.server.cio)
     implementation(libs.logback.classic)
