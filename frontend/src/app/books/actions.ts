@@ -44,7 +44,7 @@ export async function addBook(
 
   return {
     message: `Failed to add book: ${response.status} ${response.statusText}. ${message}`,
-    status: "success",
+    status: "error",
   };
 }
 
