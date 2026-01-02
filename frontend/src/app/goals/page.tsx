@@ -1,6 +1,8 @@
 import Link from "next/link";
+
 import { Progress } from "@/components/progress";
 import { BackButton } from "@/components/back-buttom";
+import { api } from "@/services/api";
 
 interface Goal {
   id: number;
@@ -16,10 +18,7 @@ interface Goal {
 }
 
 export default async function Goals() {
-  const data = await fetch("http://localhost:8080/goals", {
-    cache: "no-store",
-  });
-  const goals = await data.json();
+  const goals = await api.getGoals();
 
   return (
     <div className="flex flex-col min-h-screen p-8 sm:p-12">
