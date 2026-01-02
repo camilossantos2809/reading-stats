@@ -4,6 +4,7 @@ export type Book = {
   name: string;
   author: string | null;
   pages: number | null;
+  asin: string | null;
 };
 
 export interface Goal {

@@ -27,6 +27,9 @@ fun Application.configureRouting(repository: BookRepository) {
                 repository.getAllBooks()
             )
         }
+        get("/books/reading"){
+            call.respond(repository.getReadingBooks())
+        }
         post("/books") {
             try {
                 val book = call.receive<NewBook>()

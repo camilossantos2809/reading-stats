@@ -1,27 +1,22 @@
 package io.repository
 
-import io.db.*
+import io.db.BookGoalTable
+import io.db.BookReadingProgressTable
+import io.db.BookTable
+import io.db.GoalTable
 import io.model.*
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import org.jetbrains.exposed.v1.core.JoinType
-import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SortOrder
-import org.jetbrains.exposed.v1.core.StdOutSqlLogger
-import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.core.sum
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.core.statements.StatementType
 import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
-import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.insert
-import org.jetbrains.exposed.v1.jdbc.select
-import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import org.jetbrains.exposed.v1.jdbc.update
 
 
 interface BookRepository {
     suspend fun getAllBooks(): List<Book>
+    suspend fun getReadingBooks(): List<ReadingBook>
     suspend fun addBook(book: NewBook)
     suspend fun editBook(book: EditBook)
     suspend fun addReadingProgress(newProgress: NewBookReadingProgress)
@@ -40,9 +35,50 @@ object BookRepositorySQLite : BookRepository {
         pages = this[BookTable.pages]
     )
 
-
     override suspend fun getAllBooks() = transaction {
         BookTable.selectAll().map { it.toBook() }
+    }
+
+    override suspend fun getReadingBooks() = suspendTransaction {
+        exec(
+            """
+            with progress as (
+              select 
+                book_id,
+                max(current_page) as current_page
+              from book_reading_progress
+              group by book_id
+            )
+            select
+              b.id,
+              b.isbn,
+              b.name,
+              b.author,
+              b.pages,
+              b.asin ,
+              p.current_page 
+            from book b 
+              inner join book_goal bg on b.id = bg.book_id 
+              left join progress p on b.id = p.book_id
+            where bg.status = 'reading';
+            """,
+            explicitStatementType = StatementType.SELECT
+        ) { result ->
+            val info = mutableListOf<ReadingBook>()
+            while (result.next()) {
+                info += ReadingBook(
+                    book = Book(
+                        id = result.getInt(1),
+                        isbn = result.getString(2),
+                        name = result.getString(3),
+                        author = result.getString(4),
+                        pages = result.getInt(5),
+                        asin = result.getString(6)
+                    ), currentPage = result.getInt(7)
+                )
+            }
+            info
+        } ?: emptyList()
     }
 
     override suspend fun addBook(book: NewBook) {
@@ -56,9 +92,7 @@ object BookRepositorySQLite : BookRepository {
                 }
             }
         } catch (ex: ExposedSQLException) {
-            if (
-                ex.message?.contains("UNIQUE constraint failed") == true
-            ) {
+            if (ex.message?.contains("UNIQUE constraint failed") == true) {
                 throw BookAlreadyExistsException("A book with ISBN '${book.isbn}' already exists.")
             }
             throw BookRepositoryException("Database error: ${ex.message}")
@@ -78,9 +112,7 @@ object BookRepositorySQLite : BookRepository {
     }
 
     override suspend fun addReadingProgress(newProgress: NewBookReadingProgress) {
-
         suspendTransaction {
-
             BookReadingProgressTable.insert {
                 it[bookId] = newProgress.bookId
                 it[recordedAt] = LocalDateTime.parse("${newProgress.dateRead}T00:00:00")
@@ -96,15 +128,9 @@ object BookRepositorySQLite : BookRepository {
             }
 
             val goalPagesRead = BookReadingProgressTable.join(
-                BookGoalTable,
-                JoinType.INNER,
-                BookReadingProgressTable.bookId,
-                BookGoalTable.bookId
+                BookGoalTable, JoinType.INNER, BookReadingProgressTable.bookId, BookGoalTable.bookId
             ).join(
-                GoalTable,
-                JoinType.INNER,
-                BookGoalTable.goalId,
-                GoalTable.id
+                GoalTable, JoinType.INNER, BookGoalTable.goalId, GoalTable.id
             ).select(
                 BookReadingProgressTable.currentPage.sum()
             ).where {
@@ -126,18 +152,16 @@ object BookRepositorySQLite : BookRepository {
             val progress = BookReadingProgressTable.selectAll().where {
                 BookReadingProgressTable.bookId eq bookId
             }.orderBy(
-                BookReadingProgressTable.currentPage to SortOrder.DESC,
-                BookReadingProgressTable.id to SortOrder.DESC
-            )
-                .map {
-                    BookReadingProgress(
-                        id = it[BookReadingProgressTable.id],
-                        dateRead = it[BookReadingProgressTable.recordedAt],
-                        progressPrevious = 0,
-                        progress = 0,
-                        pagesRead = it[BookReadingProgressTable.currentPage],
-                    )
-                }
+                BookReadingProgressTable.currentPage to SortOrder.DESC, BookReadingProgressTable.id to SortOrder.DESC
+            ).map {
+                BookReadingProgress(
+                    id = it[BookReadingProgressTable.id],
+                    dateRead = it[BookReadingProgressTable.recordedAt],
+                    progressPrevious = 0,
+                    progress = 0,
+                    pagesRead = it[BookReadingProgressTable.currentPage],
+                )
+            }
 
             return@suspendTransaction GetReadingProgressResponse(book = book, progress = progress)
         }
@@ -157,6 +181,10 @@ object BookRepositoryFake : BookRepository {
             Book(id = 1, isbn = "1586487981", name = "A Economia dos Pobres", pages = 311),
             Book(id = 2, isbn = "9786559790760", name = "A Arte da Estatística", pages = 464)
         )
+    }
+
+    override suspend fun getReadingBooks(): List<ReadingBook> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun addBook(book: NewBook) {

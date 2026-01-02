@@ -1,50 +1,9 @@
 import Link from "next/link";
-import { GoalBook } from "@/types";
 import { BookCardWrapper } from "./books/book-card-wrapper";
+import { api } from "@/services/api";
 
 export default async function Home() {
-  const readingBooks: GoalBook[] = [
-    {
-      id: 12,
-      isbn: "8535930442",
-      name: "A Caverna",
-      author: "José Saramago",
-      pages: 376,
-      pagesRead: 80,
-      status: "reading",
-      rating: 0,
-    },
-    {
-      isbn: "978-8535907445",
-      name: "Declínio e queda do império romano",
-      author: "Edward Gibbon",
-      pages: 583,
-      pagesRead: 308,
-      id: 13,
-      rating: 0,
-      status: "reading",
-    },
-    // {
-    //   isbn: "978-8520942611",
-    //   name: "O Vermelho e o Negro",
-    //   author: "Sthendal",
-    //   pages: 588,
-    //   pagesRead: 500,
-    //   id: 8,
-    //   rating: 5,
-    //   status: "completed",
-    // },
-    // {
-    //   isbn: "9788535929423",
-    //   name: "O Som e a Fúria",
-    //   author: "William Faulkner",
-    //   pages: 412,
-    //   pagesRead: 180,
-    //   id: 6,
-    //   rating: 4,
-    //   status: "reading",
-    // },
-  ];
+  const readingBooks = await api.getReadingBooks();
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-balthazar-sans)]">
@@ -77,8 +36,16 @@ export default async function Home() {
           <h2 className="text-3xl font-bold mb-8">Currently Reading</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {readingBooks?.length > 0 ? (
-              readingBooks.map((book) => (
-                <BookCardWrapper key={book.isbn} book={book} />
+              readingBooks.map(({ book, currentPage }) => (
+                <BookCardWrapper
+                  key={book.isbn}
+                  book={{
+                    ...book,
+                    pagesRead: currentPage,
+                    status: "reading",
+                    rating: null,
+                  }}
+                />
               ))
             ) : (
               <div className="col-span-full p-6 border rounded-lg text-center">

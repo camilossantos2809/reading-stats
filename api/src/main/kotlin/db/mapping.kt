@@ -10,6 +10,7 @@ object BookTable : Table("book") {
     val name = text("name")
     val author = text("author").nullable()
     val pages = integer("pages").nullable()
+    val asin = text("asin").nullable()
 
     override val primaryKey = PrimaryKey(id, name = "book_pk")
 }
