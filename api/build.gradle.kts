@@ -10,7 +10,12 @@ group = "io"
 version = "0.0.1"
 
 val localProperties = Properties().apply {
-    load(file("local.properties").reader())
+    val localProperties = Properties().apply {
+        val file = file("local.properties")
+        if (file.exists()) {
+            load(file.reader())
+        }
+    }
 }
 
 application {
